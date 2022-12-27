@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# ENTER YOUR GPT API HERE
+API_KEY="Your-api-key"
+
+QUERY="$*"
+if [ "$#" -eq 0 ]
+then
+    printf "%s\n" "uses: gpt <Your Query>"
+    exit 0
+fi
+
+output=$(curl -s https://api.openai.com/v1/completions \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer '$API_KEY \
+  -d '{
+  "model": "text-davinci-003",
+  "prompt": "'"$QUERY"'",
+  "max_tokens": 150,
+  "temperature": 0
+}' | jq '.choices[].text' | cut -d'"' -f2)
+
+printf "\nGPT: %s\n" "${output##\\n\\n}"
